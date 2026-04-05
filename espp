@@ -1,0 +1,86 @@
+-- === Toggleable Player Outline ESP (Highlight) ===
+-- Paste into Command Bar or run as LocalScript
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
+
+local LocalPlayer = Players.LocalPlayer
+local ESP_ENABLED = false
+local HIGHLIGHT_NAME = "MyESPOutline"
+
+-- Function to create or update highlight on a character
+local function applyHighlight(character)
+    if not character then return end
+    
+    -- Remove old highlight if it exists
+    local existing = character:FindFirstChild(HIGHLIGHT_NAME)
+    if existing then
+        existing:Destroy()
+    end
+    
+    if not ESP_ENABLED then return end
+    
+    local highlight = Instance.new("Highlight")
+    highlight.Name = HIGHLIGHT_NAME
+    highlight.Adornee = character
+    highlight.FillTransparency = 1          -- No inner fill, only outline
+    highlight.OutlineTransparency = 0       -- Fully visible outline
+    highlight.OutlineColor = Color3.fromRGB(255, 0, 100)  -- Change this color to whatever you like (hot pink by default)
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- Shows through walls
+    highlight.Parent = character
+end
+
+-- Apply to existing characters
+local function setupExistingPlayers()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character then
+            applyHighlight(player.Character)
+        end
+        player.CharacterAdded:Connect(applyHighlight)
+    end
+end
+
+-- Toggle function with notification
+local function toggleESP()
+    ESP_ENABLED = not ESP_ENABLED
+    
+    if ESP_ENABLED then
+        StarterGui:SetCore("SendNotification", {
+            Title = "ESP",
+            Text = "Player outlines ENABLED",
+            Duration = 2,
+        })
+    else
+        StarterGui:SetCore("SendNotification", {
+            Title = "ESP",
+            Text = "Player outlines DISABLED",
+            Duration = 2,
+        })
+    end
+    
+    -- Refresh all current characters
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character then
+            applyHighlight(player.Character)
+        end
+    end
+end
+
+-- Keybind: "-" key
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Minus then  -- "-" key
+        toggleESP()
+    end
+end)
+
+-- Setup for new players
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(applyHighlight)
+end)
+
+-- Initial setup
+setupExistingPlayers()
+
+print("ESP Outline script loaded! Press '-' to toggle on/off.")
