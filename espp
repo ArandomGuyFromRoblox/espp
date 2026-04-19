@@ -24,10 +24,10 @@ local function applyHighlight(character)
     local highlight = Instance.new("Highlight")
     highlight.Name = HIGHLIGHT_NAME
     highlight.Adornee = character
-    highlight.FillTransparency = 1          -- No inner fill, only outline
-    highlight.OutlineTransparency = 0       -- Fully visible outline
-    highlight.OutlineColor = Color3.fromRGB(255, 0, 100)  -- Change this color to whatever you like (hot pink by default)
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- Shows through walls
+    highlight.FillTransparency = 1
+    highlight.OutlineTransparency = 0
+    highlight.OutlineColor = Color3.fromRGB(255, 0, 100)
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     highlight.Parent = character
 end
 
@@ -67,10 +67,10 @@ local function toggleESP()
     end
 end
 
--- Keybind: "-" key
+-- Keybind: "+" key (Shift + "=")
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.Minus then  -- "-" key
+    if input.KeyCode == Enum.KeyCode.Equals then
         toggleESP()
     end
 end)
@@ -83,4 +83,4 @@ end)
 -- Initial setup
 setupExistingPlayers()
 
-print("ESP Outline script loaded! Press '-' to toggle on/off.")
+print("ESP Outline script loaded! Press '+' to toggle on/off.")
