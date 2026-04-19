@@ -1,4 +1,4 @@
--- === Toggleable Player Outline ESP (Team + Friend Colors FIXED) ===
+-- === Toggleable Player Outline ESP (Team + Friend Colors FIXED FULL SCRIPT) ===
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -14,12 +14,17 @@ local FRIEND_COLOR = Color3.fromRGB(0, 170, 255)   -- Blue
 local TEAM_COLOR = Color3.fromRGB(0, 255, 0)       -- Green
 local ENEMY_COLOR = Color3.fromRGB(255, 0, 0)      -- Red
 
--- Function to get correct color
+-- Your friend list (UserIds)
+local FRIEND_USERIDS = {
+    [220699362] = true,
+}
+
+-- Get correct color
 local function getColor(player)
     if not player then return ENEMY_COLOR end
 
-    -- Friend priority
-    if LocalPlayer:IsFriendsWith(player.UserId) then
+    -- Friend check (works in Studio + real game)
+    if FRIEND_USERIDS[player.UserId] or LocalPlayer:IsFriendsWith(player.UserId) then
         return FRIEND_COLOR
     end
 
@@ -33,10 +38,10 @@ local function getColor(player)
     return ENEMY_COLOR
 end
 
--- Apply/update highlight
+-- Apply / update highlight
 local function applyHighlight(character)
     if not character then return end
-    
+
     local player = Players:GetPlayerFromCharacter(character)
     if not player then return end
 
@@ -57,11 +62,10 @@ local function applyHighlight(character)
         highlight.Parent = character
     end
 
-    -- ALWAYS update color
     highlight.OutlineColor = getColor(player)
 end
 
--- Loop to constantly update highlights (fixes friend detection issue)
+-- Constant update loop (keeps colors correct live)
 RunService.RenderStepped:Connect(function()
     if not ESP_ENABLED then return end
 
@@ -89,17 +93,16 @@ end
 
 Players.PlayerAdded:Connect(setupPlayer)
 
--- Toggle
+-- Toggle ESP
 local function toggleESP()
     ESP_ENABLED = not ESP_ENABLED
-    
+
     StarterGui:SetCore("SendNotification", {
         Title = "ESP",
         Text = ESP_ENABLED and "Player outlines ENABLED" or "Player outlines DISABLED",
         Duration = 2,
     })
 
-    -- Refresh instantly
     for _, player in ipairs(Players:GetPlayers()) do
         if player.Character then
             applyHighlight(player.Character)
@@ -115,4 +118,4 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-print("ESP Outline script loaded! Press '+' to toggle on/off.")
+print("ESP Outline loaded! Press '+' to toggle.")
