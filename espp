@@ -1,5 +1,4 @@
--- === Toggleable Player Outline ESP (Highlight) ===
--- Paste into Command Bar or run as LocalScript
+-- === Toggleable Player Outline ESP (Highlight with Team Colors) ===
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -9,9 +8,16 @@ local LocalPlayer = Players.LocalPlayer
 local ESP_ENABLED = false
 local HIGHLIGHT_NAME = "MyESPOutline"
 
+-- Colors
+local FRIENDLY_COLOR = Color3.fromRGB(0, 255, 0)   -- Green
+local ENEMY_COLOR = Color3.fromRGB(255, 0, 0)      -- Red
+
 -- Function to create or update highlight on a character
 local function applyHighlight(character)
     if not character then return end
+    
+    local player = Players:GetPlayerFromCharacter(character)
+    if not player then return end
     
     -- Remove old highlight if it exists
     local existing = character:FindFirstChild(HIGHLIGHT_NAME)
@@ -26,8 +32,20 @@ local function applyHighlight(character)
     highlight.Adornee = character
     highlight.FillTransparency = 1
     highlight.OutlineTransparency = 0
-    highlight.OutlineColor = Color3.fromRGB(255, 0, 100)
     highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+
+    -- Team check
+    if player.Team ~= nil and LocalPlayer.Team ~= nil then
+        if player.Team == LocalPlayer.Team then
+            highlight.OutlineColor = FRIENDLY_COLOR
+        else
+            highlight.OutlineColor = ENEMY_COLOR
+        end
+    else
+        -- Fallback if no teams
+        highlight.OutlineColor = ENEMY_COLOR
+    end
+
     highlight.Parent = character
 end
 
